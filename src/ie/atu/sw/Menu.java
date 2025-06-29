@@ -3,27 +3,29 @@ package ie.atu.sw;
 import static java.lang.System.out;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Scanner;
+
 
 public class Menu {
 	private Scanner s;
 	private boolean keepRunning = true;
+	private static final String DEFAULT_PATH = "./Test.csv";//Specify the default path.
 	
-	
-	private static final String DEFAULT_PATH = "./encodings-10000.csv";
-	
+	private String filePath = DEFAULT_PATH;//Save Path of selected file.
+
 	public Menu() {
 		s = new Scanner(System.in);
 	}
 
 	public void start() {
-		while(keepRunning) {
+		while (keepRunning) {
 			showOption();
-			
+
 			int choice = Integer.parseInt(s.next());
 			switch (choice) {
-			case 1 -> specifyMapping();
-			case 2 -> specifyText();
+			case 1 -> specifyText();
+			case 2 -> mappingText();
 			case 3 -> specifyOutput();
 			case 4 -> encodeText();
 			case 5 -> dencodeText();
@@ -36,44 +38,39 @@ public class Menu {
 		}
 		out.println("[INFO] Exiting...Bye!");
 	}
-	
-	public void specifyMapping() {
+
+	// SpecifyText allow user to give a path or use the default .csv file.
+	public String specifyText() {
 		System.out.println("Please enter the path to your mapping file.");
-        System.out.println("Or press Enter to use the default: " + DEFAULT_PATH);
-        System.out.print("Mapping file path: ");
-        
-        s = new Scanner(System.in);//Read user input path or default.
-        String input = s.nextLine().trim();//Read all line and remove blank spaces.
-        String filePath = input.isEmpty() ? DEFAULT_PATH : input;//Verify if user put a path or press Enter for the default path.
-        
-        File mappingFile = new File(filePath);
-        
-        //Validation
-        if (!mappingFile.exists()) {
-        	mappingFile = new File(DEFAULT_PATH);
-        	System.out.println("[ERROR] File does not exist.");
-        	return;
-        }
-        
-        if (!mappingFile.isFile()) {
-        	mappingFile = new File(DEFAULT_PATH);
-        	System.out.println("[ERROR] The specified path is not a file.");
-        	return;
-        }
-        
-        if (!mappingFile.canRead()) {
-        	mappingFile = new File(DEFAULT_PATH);
-        	System.out.println("[ERROR] Can not read the specified file.");
-        	return;
-        }
-        
-        System.out.println("File accepted: " + mappingFile.getAbsolutePath());
-        
-        //s.close();
+		System.out.println("Or press Enter to use the default: " + DEFAULT_PATH);
+		System.out.print("Mapping file path: ");
+
+		s = new Scanner(System.in);// Read user input path or default.
+		String input = s.nextLine().trim();// Read all line and remove blank spaces.
+		String selectedPath = input.isEmpty() ? DEFAULT_PATH : input;// Verify if user put a path or press Enter for the
+																	// default path.
+		File readingFile = new File(selectedPath);
+
+		// Validation
+		if (!readingFile.exists() || !readingFile.isFile() || !readingFile.canRead()) {
+			System.out.println("[ERROR] Invalid file. Using default: " + DEFAULT_PATH);
+			return filePath;
+		}
+
+		filePath = readingFile.getAbsolutePath();
+		System.out.println("File accepted: " + filePath);
+		return filePath;
 	}
 
-	private void specifyText() {
-		System.out.println("[INFO] text");
+	// MappingText converts .csv in to 2D array.
+	private void mappingText() {
+		String[][] data = Converter.convertFileToArray(filePath);//Read the CSV.
+
+		System.out.println("[INFO] CSV data loaded into 2D array:");
+		for (String[] row : data) {
+			System.out.println(Arrays.toString(row));//Print each line.
+		}
+
 	}
 
 	private void specifyOutput() {
@@ -95,8 +92,8 @@ public class Menu {
 		out.println("*              Encoding Words with Suffixes                *");
 		out.println("*                                                          *");
 		out.println("************************************************************");
-		out.println("(1) Specify Mapping File");
-		out.println("(2) Specify Text File to Encode");
+		out.println("(1) Specify Text File to Encode");
+		out.println("(2) Mapping Text");
 		out.println("(3) Specify Output File (default: ./out.txt)");
 		out.println("(4) Encode Text File");
 		out.println("(5) Decode Text File");
