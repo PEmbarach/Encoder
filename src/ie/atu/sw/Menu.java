@@ -3,16 +3,15 @@ package ie.atu.sw;
 import static java.lang.System.out;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Map;
 import java.util.Scanner;
-
 
 public class Menu {
 	private Scanner s;
 	private boolean keepRunning = true;
-	private static final String DEFAULT_PATH = "./Test.csv";//Specify the default path.
-	
-	private String filePath = DEFAULT_PATH;//Save Path of selected file.
+	private Map<String, Integer> mapCSV; // Store the CSV map.
+	private static final String CSV_PATH = "./Test.csv";// Specify the default path.
+	private String filePath = CSV_PATH;// Save Path of selected file.
 
 	public Menu() {
 		s = new Scanner(System.in);
@@ -22,39 +21,39 @@ public class Menu {
 		while (keepRunning) {
 			showOption();
 
-			int choice = Integer.parseInt(s.next());
-			switch (choice) {
-			case 1 -> specifyText();
-			case 2 -> mappingText();
-			case 3 -> specifyOutput();
-			case 4 -> encodeText();
-			case 5 -> dencodeText();
-			case 6 -> {
-				System.out.println("[INFO] Shutting down...please wait...");
-				keepRunning = false;
-			}
-			default -> out.print("[ERROR] Invalid Selection");
+			try {
+				int choice = Integer.parseInt(s.next());
+				switch (choice) {
+				case 1 -> specifyText();
+				case 2 -> mappingText();
+				case 3 -> specifyOutput();
+				case 4 -> encodeText();
+				case 5 -> decodeText();
+				case 6 -> {
+					System.out.println("[INFO] Shutting down...please wait...");
+					keepRunning = false;
+				}
+				default -> out.print("[ERROR] Invalid Selection");
+				}
+			} catch (Exception e) {
+				out.println("[ERROR] Please enter a valid number");
 			}
 		}
 		out.println("[INFO] Exiting...Bye!");
 	}
 
-	// SpecifyText allow user to give a path or use the default .csv file.
+	// SpecifyText allow user to give a .txt path file.
 	public String specifyText() {
-		System.out.println("Please enter the path to your mapping file.");
-		System.out.println("Or press Enter to use the default: " + DEFAULT_PATH);
-		System.out.print("Mapping file path: ");
+		System.out.println("Please enter the path to your text file.");
 
-		s = new Scanner(System.in);// Read user input path or default.
+		s = new Scanner(System.in);
 		String input = s.nextLine().trim();// Read all line and remove blank spaces.
-		String selectedPath = input.isEmpty() ? DEFAULT_PATH : input;// Verify if user put a path or press Enter for the
-																	// default path.
-		File readingFile = new File(selectedPath);
+		File readingFile = new File(input);
 
 		// Validation
 		if (!readingFile.exists() || !readingFile.isFile() || !readingFile.canRead()) {
-			System.out.println("[ERROR] Invalid file. Using default: " + DEFAULT_PATH);
-			return filePath;
+			System.out.println("[ERROR] Invalid file.");
+			return null;
 		}
 
 		filePath = readingFile.getAbsolutePath();
@@ -64,11 +63,15 @@ public class Menu {
 
 	// MappingText converts .csv in to 2D array.
 	private void mappingText() {
-		String[][] data = Converter.convertFileToArray(filePath);//Read the CSV.
+		this.mapCSV = Mapping.loadCSV(CSV_PATH);
 
-		System.out.println("[INFO] CSV data loaded into 2D array:");
-		for (String[] row : data) {
-			System.out.println(Arrays.toString(row));//Print each line.
+		if (mapCSV.isEmpty()) {
+			System.out.println("[ERROR] CSV not found or empty " + CSV_PATH + ".");
+		} else {
+			System.out.println("[INFO] CSV data loaded into 2D array:");
+			for (Map.Entry<String, Integer> entry : mapCSV.entrySet()) {
+				System.out.println(entry.getKey() + "->" + entry.getValue());
+			}
 		}
 
 	}
@@ -81,7 +84,7 @@ public class Menu {
 		System.out.println("[INFO] encode");
 	}
 
-	private void dencodeText() {
+	private void decodeText() {
 		System.out.println("[INFO] Decode");
 	}
 
