@@ -3,6 +3,9 @@ package ie.atu.sw;
 import static java.lang.System.out;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -12,7 +15,8 @@ public class Menu {
 	private Map<String, Integer> mapCSV; // Store the CSV map.
 	private static final String CSV_PATH = "./Test.csv";// Specify the default path.
 	private String filePath = CSV_PATH;// Save Path of selected file.
-
+	private Encoder encoder;
+	
 	public Menu() {
 		s = new Scanner(System.in);
 	}
@@ -30,7 +34,7 @@ public class Menu {
 				case 4 -> encodeText();
 				case 5 -> decodeText();
 				case 6 -> {
-					System.out.println("[INFO] Shutting down...please wait...");
+					out.println("[INFO] Shutting down...please wait...");
 					keepRunning = false;
 				}
 				default -> out.print("[ERROR] Invalid Selection");
@@ -57,31 +61,55 @@ public class Menu {
 		}
 
 		filePath = readingFile.getAbsolutePath();
-		System.out.println("File accepted: " + filePath);
-		return filePath;
-	}
 
-	// MappingText converts .csv in to 2D array.
-	private void mappingText() {
-		this.mapCSV = Mapping.loadCSV(CSV_PATH);
+		// Print the content of the loaded file.
+		try {
+			String text = Files.readString(Path.of(filePath));
 
-		if (mapCSV.isEmpty()) {
-			System.out.println("[ERROR] CSV not found or empty " + CSV_PATH + ".");
-		} else {
-			System.out.println("[INFO] CSV data loaded into 2D array:");
-			for (Map.Entry<String, Integer> entry : mapCSV.entrySet()) {
-				System.out.println(entry.getKey() + "->" + entry.getValue());
-			}
+			System.out.println("\n[TEXT]");
+			System.out.println("----------------------------------------");
+			System.out.println(text);
+			System.out.println("----------------------------------------");
+			System.out.println("\nFile accepted: " + filePath);
+
+			return filePath;
+		} catch (IOException e) {
+			System.out.println("[ERROR] Could not read file: " + e.getMessage());
+			return null;
 		}
-
 	}
+
+	// MappingText map and converts .csv in to 2D array.
+	private void mappingText() {
+        this.mapCSV = Mapping.loadCSV(CSV_PATH);
+
+        if (mapCSV.isEmpty()) {
+            out.println("[ERROR] CSV not found or empty " + CSV_PATH + ".");
+        } else {
+            out.println("[INFO] CSV data loaded into 2D array:");
+            mapCSV.forEach((key, value) -> out.println(key + "->" + value));
+            
+            this.encoder = new Encoder(this.mapCSV);
+        }
+    }
 
 	private void specifyOutput() {
 		System.out.println("[INFO] output");
 	}
 
 	private void encodeText() {
-		System.out.println("[INFO] encode");
+		if(filePath == null || filePath.isEmpty()) {
+			 System.out.println("[ERROR] No file specified. Please use option (1) first.");
+		     return;
+		}
+		
+		if(encoder == null) {
+			System.out.println("[ERROR] CSV mapping not loaded. Please use option (2) first.");
+	        return;
+		}
+		
+		System.out.println("[INFO] Starting encoding of file: " + filePath);
+	    encoder.encodeFromFile(filePath);
 	}
 
 	private void decodeText() {

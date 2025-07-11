@@ -10,9 +10,7 @@ public class Mapping {
 	public static Map<String, Integer> loadCSV(String csvFilePath) {
 		Map<String, Integer> wordToNumberMap = new HashMap<>();
 
-		String file = "./Test.csv";
-
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(csvFilePath)))) {
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				// To split each line
