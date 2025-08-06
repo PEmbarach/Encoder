@@ -13,7 +13,7 @@ public class Menu {
 	private Scanner s;
 	private boolean keepRunning = true;
 	private Map<String, Integer> mapCSV; // Store the CSV map.
-	private static final String CSV_PATH = "./Test.csv";// Specify the default path.
+	private static final String CSV_PATH = "./encodings-10000.csv";// Specify the default path.
 	private String filePath = CSV_PATH;// Save Path of selected file.
 	private Encoder encoder;
 	
@@ -109,7 +109,7 @@ public class Menu {
 		}
 		
 		System.out.println("[INFO] Starting encoding of file: " + filePath);
-	    encoder.encodeFromFile(filePath);
+	    encoder.readText(filePath);
 	}
 
 	private void decodeText() {
