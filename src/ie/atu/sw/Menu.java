@@ -16,11 +16,13 @@ public class Menu {
 	private static final String CSV_PATH = "./encodings-10000.csv";// Specify the default path.
 	private String filePath = CSV_PATH;// Save Path of selected file.
 	private Encoder encoder;
+	private String outputFilePath = "./out.txt";//Default Value
 	
 	public Menu() {
 		s = new Scanner(System.in);
 	}
-
+	
+	
 	public void start() {
 		while (keepRunning) {
 			showOption();
@@ -93,8 +95,17 @@ public class Menu {
         }
     }
 
-	private void specifyOutput() {
-		System.out.println("[INFO] output");
+	private void specifyOutput() throws IOException {
+		System.out.println("Please enter the name of you output file.");
+		s = new Scanner(System.in);
+		String output = s.nextLine().trim();// Read all line and remove blank spaces.
+		if (!output.endsWith(".txt")) {
+			output += ".txt";
+		}
+		outputFilePath = output;
+		System.out.println("[INFO] Outpu file will be saved as: " + outputFilePath);
+		
+		
 	}
 
 	private void encodeText() {
@@ -109,7 +120,8 @@ public class Menu {
 		}
 		
 		System.out.println("[INFO] Starting encoding of file: " + filePath);
-	    encoder.readText(filePath);
+	    encoder.readText(filePath, outputFilePath);
+	    
 	}
 
 	private void decodeText() {

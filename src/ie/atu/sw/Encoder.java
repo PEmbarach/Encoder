@@ -10,7 +10,7 @@ public class Encoder {
 		this.mapCSV = mapCSV;
 	}
 
-	public void readText(String filePath) {
+	public void readText(String filePath, String outputFilePath) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 			StringBuilder sb = new StringBuilder();
 			String line;
@@ -65,14 +65,12 @@ public class Encoder {
 	                System.out.println(encodedParts);
 				}
 			}
-
-			File file = new File("Exemple.txt");
-			file.createNewFile();
-
-			Writer targetFileWriter = new FileWriter(file, false);
-			targetFileWriter.write(fullOutput.toString());
-			targetFileWriter.close();
-
+			
+			try (Writer targetFileWriter = new FileWriter(outputFilePath, false)){
+				targetFileWriter.write(fullOutput.toString());
+			}
+			
+			System.out.println("[INFO] Output saved to: " + outputFilePath);
 			
 			
 			
