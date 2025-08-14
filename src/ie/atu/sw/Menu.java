@@ -17,6 +17,7 @@ public class Menu {
 	private String filePath = CSV_PATH;// Save Path of selected file.
 	private Encoder encoder;
 	private String outputFilePath = "./out.txt";//Default Value
+	private Decoder decoder;
 	
 	public Menu() {
 		s = new Scanner(System.in);
@@ -81,7 +82,7 @@ public class Menu {
 		}
 	}
 
-	// MappingText map and converts .csv in to 2D array.
+	//MappingText() coordinates the process and decides what to do with the data.
 	private void mappingText() {
         this.mapCSV = Mapping.loadCSV(CSV_PATH);
 
@@ -92,6 +93,7 @@ public class Menu {
             mapCSV.forEach((key, value) -> out.println(key + "->" + value));
             
             this.encoder = new Encoder(this.mapCSV);
+            this.decoder = new Decoder(this.mapCSV);
         }
     }
 
@@ -125,7 +127,18 @@ public class Menu {
 	}
 
 	private void decodeText() {
-		System.out.println("[INFO] Decode");
+		if(filePath == null || filePath.isEmpty()) {
+			 System.out.println("[ERROR] No file specified. Please use option (1) first.");
+		     return;
+		}
+		
+		if(decoder == null) {
+			System.out.println("[ERROR] CSV mapping not loaded. Please use option (2) first.");
+	        return;
+		}
+		
+		System.out.println("[INFO] Starting encoding of file: " + filePath);
+	    decoder.readDecoded(filePath);
 	}
 
 	private void showOption() {
@@ -135,7 +148,7 @@ public class Menu {
 		out.println("*              Encoding Words with Suffixes                *");
 		out.println("*                                                          *");
 		out.println("************************************************************");
-		out.println("(1) Specify Text File to Encode");
+		out.println("(1) Specify Text File to Encode/Decode");
 		out.println("(2) Mapping Text");
 		out.println("(3) Specify Output File (default: ./out.txt)");
 		out.println("(4) Encode Text File");

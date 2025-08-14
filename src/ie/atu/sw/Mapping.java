@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+//Mapping is only responsible for reading and converting CSV into a 2D Array.
 public class Mapping {
 	public static Map<String, Integer> loadCSV(String csvFilePath) {
 		Map<String, Integer> wordToNumberMap = new HashMap<>();

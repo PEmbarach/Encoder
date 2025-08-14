@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class Encoder {
+	// Make a map linking each word with the corresponding numerical value.
 	private final Map<String, Integer> mapCSV;
 
 	public Encoder(Map<String, Integer> mapCSV) {
